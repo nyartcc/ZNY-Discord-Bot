@@ -1,4 +1,5 @@
 const nacl = require('tweetnacl');
+var _ = require('underscore');
 
 exports.handler = async (event) => {
     console.log(event);
@@ -58,6 +59,24 @@ exports.handler = async (event) => {
             "type": 4,
             "data": {
                 "content": "To get your account linked to Discord, please visit https://nyartcc.org, login, and click the banner to link your account.\n\n"
+            }
+        })
+    }
+
+    let karlStatements = [
+        "Yes! Karl is the greatest! You get a cookie. 🍪",
+        "King and Supreme Chancellor of the Republic of New York ARTCC, Karl Moberg is indeed the greatest! You'd be wise to not anger him. 🤔",
+        "Yes, yes, he is!",
+        "Karl is🥇"
+    ]
+
+
+
+    if (body.data.name === 'karlisgreat') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": _.sample(karlStatements)
             }
         })
     }
