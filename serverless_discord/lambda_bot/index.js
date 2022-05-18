@@ -65,12 +65,12 @@ exports.handler = async (event) => {
 
     let karlStatements = [
         "Yes! Karl is the greatest! You get a cookie. 🍪",
-        "King and Supreme Chancellor of the Republic of New York ARTCC, Karl Moberg is indeed the greatest! You'd be wise to not anger him. 🤔",
-        "Yes, yes, he is!",
-        "Karl is🥇"
+        "King 👑 and Supreme Chancellor of the Republic of New York ARTCC, Karl Moberg is indeed the greatest! You'd be wise to not anger him. 🤔",
+        "Why yes! Yes, he is!",
+        "Karl is 🥇"
     ]
 
-
+q
 
     if (body.data.name === 'karlisgreat') {
         return JSON.stringify({
