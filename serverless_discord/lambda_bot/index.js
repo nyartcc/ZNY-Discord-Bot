@@ -70,7 +70,21 @@ exports.handler = async (event) => {
         "Karl is 🥇"
     ]
 
-q
+    let gizepStatements = [
+        "\"Words come out of my mouth and they don't mean anything.\"\n - Gizep (12/9/2021)",
+        "\"He controlled 27 hours in one day!\"\n - Gizep (12/23/2021)",
+        "\"Boxed pasta if very, very good 🍝\"\n - Gizep (01/05/2022)",
+        "\"I think sauce in cans is delicious 🍜\"\n - Gizep (01/05/2022)",
+        "\"Gabe, you're stuck mic-ing\"\n - Gizep (01/08/2022)",
+        "\"I'm DEAD!!??\"\n - Gizep (02/11/2022)",
+        "\"Decompressurization\"\n - Gizep (02/18/2022)",
+        "\"Houston, it's pretty much in Texas\"\n - Gizep (04/09/2022)",
+        "\"Spaghetti is actually overrated 🍝\"\n - Gizep (05/14/2022)",
+        "\"He lives in Albany, the capital of New York City!\"\n - Gizep (01/30/2021)",
+        "\"There's something relaxing about watching a boat sink.\"\n - Gizep (02/08/2021)",
+        "\"I don't think I've ever had to give vectors to an IFR aircraft.\"\n - Gizep (02/17/2021)",
+    ]
+
 
     if (body.data.name === 'karlisgreat') {
         return JSON.stringify({
@@ -81,6 +95,14 @@ q
         })
     }
 
+    if (body.data.name === 'gizep') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": _.sample(gizepStatements)
+            }
+        })
+    }
 
     return {
         statusCode: 404 // If no handler implemented for Discord's request
