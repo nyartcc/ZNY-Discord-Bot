@@ -28,5 +28,5 @@ cd register_command
 node register_command.js
 ```
 
-[//]: # ( License: 
+# License: 
 MIT
