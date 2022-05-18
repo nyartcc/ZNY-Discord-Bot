@@ -11,9 +11,9 @@ const headers = {
 console.log(headers)
 
 let command_data = {
-    "name": "foo",
+    "name": "karlisgreat",
     "type": 1,
-    "description": "replies with bar ;/",
+    "description": "Oh hey, Karl is great! 👑",
 }
 
 axios.post(url, JSON.stringify(command_data), {
