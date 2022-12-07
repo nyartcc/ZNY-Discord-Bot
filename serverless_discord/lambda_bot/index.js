@@ -1,5 +1,6 @@
 const nacl = require('tweetnacl');
 var _ = require('underscore');
+const AWS = require('aws-sdk');
 
 exports.handler = async (event) => {
     console.log(event);
@@ -33,27 +34,18 @@ exports.handler = async (event) => {
         }
     }
 
-    // Handle /foo command
-    if (body.data.name === 'foo') {
-        return JSON.stringify(({
-            "type": 4,
-            "data": {
-                "content": "bar"
-            }
-        }))
-    }
-
     // Handle /getroles command
     if (body.data.name === 'getroles') {
         return JSON.stringify({
             "type": 4,
             "data": {
-                "content": "\* *waves hand\* * 👋 \n These are not the commands you are looking for...",
+                "content": "\* *waves hand\* * 👋 \n These are not the commands you are looking for... Try /linkaccount instead.",
 
             }
         })
     }
 
+    // Handle /linkaccount command
     if (body.data.name === 'linkaccount'){
         return JSON.stringify({
             "type": 4,
@@ -63,34 +55,99 @@ exports.handler = async (event) => {
         })
     }
 
-    let karlStatements = [
-        "Yes! Karl is the greatest! You get a cookie. 🍪",
-        "King 👑 and Supreme Chancellor of the Republic of New York ARTCC, Karl Moberg is indeed the greatest! You'd be wise to not anger him. 🤔",
-        "Why yes! Yes, he is!",
-        "Karl is 🥇"
+    // Handle /help command
+    if (body.data.name === 'znyhelp') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": "👋 Hello! I'm the NYARTCC Discord Bot. You can use me to perform various tasks in Discord. \n\nTo see the full list of commands, please visit https://nyartcc.org/discordbot",
+            }
+        })
+    }
+
+    // Handle /commands command
+    if (body.data.name === 'commands') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": "👋 Hello! I'm the NYARTCC Discord Bot. You can use me to perform various tasks in Discord. \n\nTo see the full list of commands, please visit https://nyartcc.org/discordbot",
+                "flags": 64
+            }
+        })
+    }
+
+    // Handle /staff command
+    if (body.data.name === 'staff') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": "To see the staff list, please visit https://nyartcc.org/staff",
+                "flags": 64
+            }
+        })
+    }
+
+
+    const TABLE_NAME = process.env.DYNAMO_TABLE_NAME;
+    const dynamo = new AWS.DynamoDB.DocumentClient();
+
+    // FIX ME - Rewrite to support any input sortKey
+    // Scan the table for items with the sort keys "karl" and "gizep"
+    const params = {
+        TableName: TABLE_NAME,
+        FilterExpression: "#sortKey IN (:karl, :gizep)",
+        ExpressionAttributeNames: {
+            '#sortKey': 'sortKey'
+        },
+        ExpressionAttributeValues: {
+            ':sortKey': 'gizep',
+            ':karl': 'karl',
+        },
+    };
+
+    dynamo.scan(params, (err, data) => {
+        if (err) throw err;
+
+        // Filter the items by the two sort keys
+        const items = _.filter(data.Items, item => item.sortKey === 'name');
+
+        // Pick a random item from the list where the sort key is equal to "karl"
+
+        const randomKarlItem = _.sample(karlItems);
+        const randomGizepItem = _.sample(gizepItems);
+
+        // Print the random items to the console
+        console.log(randomKarlItem);
+        console.log(randomGizepItem);
+    });
+
+
+    let cinnamonStatements = [
+        "YOU GET A CINNAMON ROLL <:Cinnabun:791383982256291841>! AND YOU GET A CINNAMON ROLL <:Cinnabun:791383982256291841>! EVERYONE GETS A CINNAMON ROLL <:Cinnabun:791383982256291841><:Cinnabun:791383982256291841><:Cinnabun:791383982256291841>",
+        "Cinnamon rolls are the best. <:Cinnabun:791383982256291841>",
+        "Mike, is that you? <:Cinnabun:791383982256291841>",
+        "Here! Have a cinnamon roll! <:Cinnabun:791383982256291841>",
+        "Woo hoo! Cinnamon rolls! <:Cinnabun:791383982256291841>",
     ]
 
-    let gizepStatements = [
-        "\"Words come out of my mouth and they don't mean anything.\"\n - Gizep (12/9/2021)",
-        "\"He controlled 27 hours in one day!\"\n - Gizep (12/23/2021)",
-        "\"Boxed pasta if very, very good 🍝\"\n - Gizep (01/05/2022)",
-        "\"I think sauce in cans is delicious 🍜\"\n - Gizep (01/05/2022)",
-        "\"Gabe, you're stuck mic-ing\"\n - Gizep (01/08/2022)",
-        "\"I'm DEAD!!??\"\n - Gizep (02/11/2022)",
-        "\"Decompressurization\"\n - Gizep (02/18/2022)",
-        "\"Houston, it's pretty much in Texas\"\n - Gizep (04/09/2022)",
-        "\"Spaghetti is actually overrated 🍝\"\n - Gizep (05/14/2022)",
-        "\"He lives in Albany, the capital of New York City!\"\n - Gizep (01/30/2021)",
-        "\"There's something relaxing about watching a boat sink.\"\n - Gizep (02/08/2021)",
-        "\"I don't think I've ever had to give vectors to an IFR aircraft.\"\n - Gizep (02/17/2021)",
-    ]
+    // Instead of having static statements, query the dynamoDB table 'statements' for the user's statements
 
+
+    // Handle /cinnamon command
+    if (body.data.name === 'cinnamon') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": _.sample(cinnamonStatements),
+            }
+        })
+    }
 
     if (body.data.name === 'karlisgreat') {
         return JSON.stringify({
             "type": 4,
             "data": {
-                "content": _.sample(karlStatements)
+                "content": JSON.stringify(randomKarlItem),
             }
         })
     }
@@ -99,7 +156,7 @@ exports.handler = async (event) => {
         return JSON.stringify({
             "type": 4,
             "data": {
-                "content": _.sample(gizepStatements)
+                "content": JSON.stringify(randomGizepItem),
             }
         })
     }

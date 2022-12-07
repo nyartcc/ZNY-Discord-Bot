@@ -10,10 +10,13 @@ const headers = {
 }
 console.log(headers)
 
+// Run this to register commands from ../lambda_bot/index.js
+// Change the name for the command to match the name in the index.js file
+// Then change the description to something helpful.
 let command_data = {
-    "name": "gizep",
+    "name": "znyhelp",
     "type": 1,
-    "description": "Random quotes from Gizep!",
+    "description": "Need help? The robot 🤖 is here to help!",
 }
 
 axios.post(url, JSON.stringify(command_data), {
