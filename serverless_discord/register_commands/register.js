@@ -14,9 +14,16 @@ console.log(headers)
 // Change the name for the command to match the name in the index.js file
 // Then change the description to something helpful.
 let command_data = {
-    "name": "znyhelp",
-    "type": 1,
-    "description": "Need help? The robot 🤖 is here to help!",
+    "name": "metar",
+    "description": "Get the METAR for an airport",
+    "options": [
+        {
+            "name": "airport",
+            "description": "The airport to get the METAR for",
+            "type": 3,
+            "required": true
+        }
+    ]
 }
 
 axios.post(url, JSON.stringify(command_data), {
