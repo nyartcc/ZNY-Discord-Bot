@@ -1,6 +1,7 @@
 const nacl = require('tweetnacl');
 var _ = require('underscore');
 const AWS = require('aws-sdk');
+const fetch = require("isomorphic-fetch");
 
 exports.handler = async (event) => {
     console.log(event);
@@ -10,6 +11,8 @@ exports.handler = async (event) => {
     const signature = event.headers['x-signature-ed25519']
     const timestamp = event.headers['x-signature-timestamp'];
     const strBody = event.body; // should be string, for successful sign
+
+    console.log("StrBody: " + strBody);
 
     const isVerified = nacl.sign.detached.verify(
         Buffer.from(timestamp + strBody),
@@ -88,40 +91,6 @@ exports.handler = async (event) => {
     }
 
 
-    const TABLE_NAME = process.env.DYNAMO_TABLE_NAME;
-    const dynamo = new AWS.DynamoDB.DocumentClient();
-
-    // FIX ME - Rewrite to support any input sortKey
-    // Scan the table for items with the sort keys "karl" and "gizep"
-    const params = {
-        TableName: TABLE_NAME,
-        FilterExpression: "#sortKey IN (:karl, :gizep)",
-        ExpressionAttributeNames: {
-            '#sortKey': 'sortKey'
-        },
-        ExpressionAttributeValues: {
-            ':sortKey': 'gizep',
-            ':karl': 'karl',
-        },
-    };
-
-    dynamo.scan(params, (err, data) => {
-        if (err) throw err;
-
-        // Filter the items by the two sort keys
-        const items = _.filter(data.Items, item => item.sortKey === 'name');
-
-        // Pick a random item from the list where the sort key is equal to "karl"
-
-        const randomKarlItem = _.sample(karlItems);
-        const randomGizepItem = _.sample(gizepItems);
-
-        // Print the random items to the console
-        console.log(randomKarlItem);
-        console.log(randomGizepItem);
-    });
-
-
     let cinnamonStatements = [
         "YOU GET A CINNAMON ROLL <:Cinnabun:791383982256291841>! AND YOU GET A CINNAMON ROLL <:Cinnabun:791383982256291841>! EVERYONE GETS A CINNAMON ROLL <:Cinnabun:791383982256291841><:Cinnabun:791383982256291841><:Cinnabun:791383982256291841>",
         "Cinnamon rolls are the best. <:Cinnabun:791383982256291841>",
@@ -143,23 +112,157 @@ exports.handler = async (event) => {
         })
     }
 
-    if (body.data.name === 'karlisgreat') {
+
+  // Set up the DynamoDB client
+  const dynamoDb = new AWS.DynamoDB();
+  const docClient = new AWS.DynamoDB.DocumentClient();
+
+
+  // Query the DynamoDB table for a random quote from each person
+  const karlQuote = await docClient.query({
+    TableName: 'Quotes',
+    KeyConditionExpression: 'person = :person',
+    ExpressionAttributeValues: {
+      ':person': 'Karl'
+    },
+    Select: 'ALL_ATTRIBUTES'
+  }).promise();
+
+  const gizepQuote = await docClient.query({
+    TableName: 'Quotes',
+    KeyConditionExpression: 'person = :person',
+    ExpressionAttributeValues: {
+      ':person': 'Gizep'
+    },
+    Select: 'ALL_ATTRIBUTES'
+  }).promise();
+
+  // Select a random quote from each person
+  const randomKarlQuote = karlQuote.Items[Math.floor(Math.random() * karlQuote.Items.length)];
+  const randomGizepQuote = gizepQuote.Items[Math.floor(Math.random() * gizepQuote.Items.length)];
+
+    // Return the quotes
+      if (body.data.name === 'karlisgreat') {
+
+
+
         return JSON.stringify({
             "type": 4,
             "data": {
-                "content": JSON.stringify(randomKarlItem),
+                "content": randomKarlQuote.quote,
             }
         })
     }
 
     if (body.data.name === 'gizep') {
+
+        let quote_string = "\"" + randomGizepQuote.quote + "\" - " + randomGizepQuote.person + ", " + randomGizepQuote.date;
+
         return JSON.stringify({
             "type": 4,
             "data": {
-                "content": JSON.stringify(randomGizepItem),
+                "content": quote_string
             }
         })
     }
+
+
+    // Handle /metar command
+    if (body.data.name === 'metar') {
+        console.log("METAR command received");
+        console.log(body.data);
+
+        // Make sure that the options array exists and has at least one element
+        if (!body.data.options || body.data.options.length === 0) {
+            console.error("No airport code provided in command options");
+            return JSON.stringify({
+                type: 4,
+                data: {
+                    content: "Error: No airport code provided",
+                },
+            });
+        }
+
+        let airport = body.data.options[0].value;
+        console.log("Airport: " + airport);
+
+        // Make sure that the airport code is a string
+        if (typeof airport !== "string") {
+            console.error("Invalid airport code: " + airport);
+            return JSON.stringify({
+                type: 4,
+                data: {
+                    content: "Error: Invalid airport code",
+                },
+            });
+        }
+
+        // Check if the airport code is valid
+        if (!airport.match(/^[A-Za-z]{4}$/)) {
+            console.error("Invalid airport code");
+            return JSON.stringify({
+                type: 4,
+                data: {
+                    content: "Error: Invalid airport code",
+                },
+            });
+        }
+
+        // Create the URL for the METAR request
+        const wxUrl = `https://api.checkwx.com/metar/${airport}/decoded`;
+        console.log("WX URL: " + wxUrl);
+
+        // Return the response to the Discord command immediately
+        return fetch(wxUrl, {
+            method: 'GET',
+            headers: {
+                'X-API-Key': process.env.CHECKWX_API_KEY,
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Error fetching METAR from CheckWX API: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (!data || !data.data || !data.data[0]) {
+                    throw new Error("Invalid response from CheckWX API" + data);
+                }
+
+                let metar = data.data[0].raw_text;
+                console.log("Response METAR: " + metar);
+
+                return JSON.stringify({
+                    "type": 4,
+                    "data": {
+                        "content": metar,
+                    },
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+                return JSON.stringify({
+                    "type": 4,
+                    "data": {
+                        "content": "Error: " + error.message,
+                    },
+                });
+            });
+    }
+
+
+
+    // Handle JFK pilots
+    if (body.data.name === 'jfkpilots') {
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": "JFK pilots are NOT THAT BAD!",
+            }
+        })
+    }
+
 
     return {
         statusCode: 404 // If no handler implemented for Discord's request
