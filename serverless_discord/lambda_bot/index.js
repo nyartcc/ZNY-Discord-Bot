@@ -5,7 +5,7 @@ const _      = require('underscore');
 const AWS    = require('aws-sdk');              // Included via Lambda Layer (Dev Dependency in local)
 const fetch  = require("isomorphic-fetch");     // Included via Lambda Layer (Dev Dependency in local)
 
-const debugMode = true;
+const debugMode = false;
 
 exports.handler = async (event) => {
 
