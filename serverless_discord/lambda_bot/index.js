@@ -400,7 +400,7 @@ exports.handler = async (event) => {
         });
 
         // Get the date of the latest entry in the table
-        const latestDate = new Date(sortedFaqArray[sortedFaqArray.length - 1].updatedAt);
+        const latestDate = new Date(sortedFaqArray[sortedFaqArray.length - 1].dateUpdated);
 
         // Format the date
         const displayOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
