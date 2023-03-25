@@ -2,7 +2,6 @@
 
 const nacl   = require('tweetnacl');
 const _      = require('underscore');
-const moment = require('moment');
 const AWS    = require('aws-sdk');              // Included via Lambda Layer (Dev Dependency in local)
 const fetch  = require("isomorphic-fetch");     // Included via Lambda Layer (Dev Dependency in local)
 
@@ -401,10 +400,11 @@ exports.handler = async (event) => {
         });
 
         // Get the date of the latest entry in the table
-        const latestDate = moment(sortedFaqArray[sortedFaqArray.length - 1].updatedAt);
+        const latestDate = new Date(sortedFaqArray[sortedFaqArray.length - 1].updatedAt);
 
         // Format the date
-        const formattedDate = latestDate.format('MMM Do YYYY');
+        const displayOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        const formattedDate = latestDate.toLocaleDateString('en-us', displayOptions);
 
         // Add the date to the footer
         data.data.embeds[0].footer.text = `*Last Updated:* ${formattedDate}`;
