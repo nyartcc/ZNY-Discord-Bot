@@ -3,16 +3,26 @@ var _ = require('underscore');
 const AWS = require('aws-sdk');
 const fetch = require("isomorphic-fetch");
 
+
+
+
 exports.handler = async (event) => {
-    console.log(event);
+    // console.log(event);  // Uncomment to view the entire body of the request
     // Checking signature (requirement 1.)
     // Your public key can be found on your application in the Developer Portal
+
+
     const PUBLIC_KEY = process.env.PUBLIC_KEY;
     const signature = event.headers['x-signature-ed25519']
     const timestamp = event.headers['x-signature-timestamp'];
     const strBody = event.body; // should be string, for successful sign
 
     console.log("StrBody: " + strBody);
+
+    if (!PUBLIC_KEY) {
+        throw new Error('No PUBLIC_KEY found in environment variables');
+        console.log("No PUBLIC_KEY found in environment variables");
+    }
 
     const isVerified = nacl.sign.detached.verify(
         Buffer.from(timestamp + strBody),
@@ -33,7 +43,7 @@ exports.handler = async (event) => {
     if (body.type === 1) {
         return {
             statusCode: 200,
-            body: JSON.stringify({ "type": 1 }),
+            body: JSON.stringify({"type": 1}),
         }
     }
 
@@ -49,7 +59,7 @@ exports.handler = async (event) => {
     }
 
     // Handle /linkaccount command
-    if (body.data.name === 'linkaccount'){
+    if (body.data.name === 'linkaccount') {
         return JSON.stringify({
             "type": 4,
             "data": {
@@ -67,6 +77,7 @@ exports.handler = async (event) => {
             }
         })
     }
+
 
     // Handle /commands command
     if (body.data.name === 'commands') {
@@ -113,37 +124,47 @@ exports.handler = async (event) => {
     }
 
 
-  // Set up the DynamoDB client
-  const dynamoDb = new AWS.DynamoDB();
-  const docClient = new AWS.DynamoDB.DocumentClient();
+    // Set up the DynamoDB client
+    const dynamoDb = new AWS.DynamoDB();
+    const docClient = new AWS.DynamoDB.DocumentClient();
 
 
-  // Query the DynamoDB table for a random quote from each person
-  const karlQuote = await docClient.query({
-    TableName: 'Quotes',
-    KeyConditionExpression: 'person = :person',
-    ExpressionAttributeValues: {
-      ':person': 'Karl'
-    },
-    Select: 'ALL_ATTRIBUTES'
-  }).promise();
+    // Query the DynamoDB table for a random quote from each person
+    const karlQuote = await docClient.query({
+        TableName: 'Quotes',
+        KeyConditionExpression: 'person = :person',
+        ExpressionAttributeValues: {
+            ':person': 'Karl'
+        },
+        Select: 'ALL_ATTRIBUTES'
+    }).promise();
 
-  const gizepQuote = await docClient.query({
-    TableName: 'Quotes',
-    KeyConditionExpression: 'person = :person',
-    ExpressionAttributeValues: {
-      ':person': 'Gizep'
-    },
-    Select: 'ALL_ATTRIBUTES'
-  }).promise();
+    const gizepQuote = await docClient.query({
+        TableName: 'Quotes',
+        KeyConditionExpression: 'person = :person',
+        ExpressionAttributeValues: {
+            ':person': 'Gizep'
+        },
+        Select: 'ALL_ATTRIBUTES'
+    }).promise();
 
-  // Select a random quote from each person
-  const randomKarlQuote = karlQuote.Items[Math.floor(Math.random() * karlQuote.Items.length)];
-  const randomGizepQuote = gizepQuote.Items[Math.floor(Math.random() * gizepQuote.Items.length)];
+    const gabeQuote = await docClient.query({
+        TableName: 'Quotes',
+        KeyConditionExpression: 'person = :person',
+        ExpressionAttributeValues: {
+            ':person': 'Gabe'
+        },
+        Select: 'ALL_ATTRIBUTES'
+    }).promise();
+
+
+    // Select a random quote from each person
+    const randomKarlQuote = karlQuote.Items[Math.floor(Math.random() * karlQuote.Items.length)];
+    const randomGizepQuote = gizepQuote.Items[Math.floor(Math.random() * gizepQuote.Items.length)];
+    const randomGabeQuote = gabeQuote.Items[Math.floor(Math.random() * gabeQuote.Items.length)];
 
     // Return the quotes
-      if (body.data.name === 'karlisgreat') {
-
+    if (body.data.name === 'karlisgreat') {
 
 
         return JSON.stringify({
@@ -166,11 +187,24 @@ exports.handler = async (event) => {
         })
     }
 
+    if (body.data.name === 'gabe') {
+
+        let quote_string = "\"" + randomGabeQuote.quote + "\" - " + randomGabeQuote.person + ", " + randomGabeQuote.date;
+
+        return JSON.stringify({
+            "type": 4,
+            "data": {
+                "content": quote_string
+            }
+        })
+    }
+
 
     // Handle /metar command
     if (body.data.name === 'metar') {
         console.log("METAR command received");
         console.log(body.data);
+
 
         // Make sure that the options array exists and has at least one element
         if (!body.data.options || body.data.options.length === 0) {
@@ -208,7 +242,7 @@ exports.handler = async (event) => {
             });
         }
 
-        // Create the URL for the METAR request
+
         const wxUrl = `https://api.checkwx.com/metar/${airport}/decoded`;
         console.log("WX URL: " + wxUrl);
 
@@ -252,7 +286,6 @@ exports.handler = async (event) => {
     }
 
 
-
     // Handle JFK pilots
     if (body.data.name === 'jfkpilots') {
         return JSON.stringify({
@@ -263,7 +296,88 @@ exports.handler = async (event) => {
         })
     }
 
+    // FAQ Section
+    if (body.data.name === 'faq') {
+        // Define the parameters for the query against the DynamoDB table
+        const faqScanParams = {
+            TableName: 'DiscordFAQ',
+        };
 
+
+        // Create the message to send to Discord
+        const data = {
+            "type": 4,
+            "data": {
+                "content": "",
+                "embeds":
+                    [
+                        {
+                            "type": "rich",
+                            "title": "Frequency Asked Questions",
+                            "color": 0x965aff,
+                            "fields": [],
+                            "thumbnail": {
+                                "url": 'https://zny-uploads.s3.amazonaws.com/images/FAQ_Logo.png',
+                                "height": 600,
+                                "width": 600
+                            },
+                            "url": "https://nyartcc.org/faq",
+                            "footer": {
+                                "text": "*Last Updated:* n/a "
+                            }
+                        },
+                    ],
+            },
+        };
+
+        // Query the DynamoDB table for the FAQ
+        const faqScan = await docClient.scan(faqScanParams).promise();
+        const faqArray = faqScan.Items.map(item => ({
+            question: item.question,
+            answer: item.answer + "\n\n",
+        }));
+
+        console.log(faqArray);
+
+        // Add the FAQ to the message
+        faqArray.forEach((item) => {
+            console.log("Current item: " + item.question.toString());
+            data.data.embeds[0].fields.push({
+                name: item.question.toString(),
+                value: item.answer.toString(),
+                inline: false,
+            });
+        });
+
+        // Sort the items in the table by the updatedat attribute
+        const sortedFaqArray = faqScan.Items.sort((a, b) => {
+            if (a.updatedAt < b.updatedAt) return -1;
+            if (a.updatedAt > b.updatedAt) return 1;
+            return 0;
+        });
+
+        const moment = require('moment');
+
+        // Get the date of the latest entry in the table
+        const latestDate = moment(sortedFaqArray[sortedFaqArray.length -1].updatedAt);
+
+        // Format the date
+        const formattedDate = latestDate.format('MMM Do YYYY');
+
+        // Add the date to the footer
+        data.data.embeds[0].footer.text = `*Last Updated:* ${formattedDate}`;
+
+        // Return the message to Discord
+        console.log('Returning FAQ to Discord');
+        console.log('Return Data:' + JSON.stringify(data));
+
+        return JSON.stringify(data);
+
+        // End of FAQ Section
+    }
+
+
+    // Default response if no command is matched
     return {
         statusCode: 404 // If no handler implemented for Discord's request
     }
