@@ -145,6 +145,18 @@ exports.handler = async (event) => {
         });
     }
 
+    // Handle /justask command
+    if (body.data.name === 'justask') {
+
+        return JSON.stringify({
+            "type" : 4,
+            "data" : {
+                "content" : "ℹ️ No need to ask permission just to ask another question. Just ask your actual question. \n\nFor more information about why you should do this, and for guidance on how to ask for the help in the most efficient manner, please refer to  https://dontasktoask.com/ and https://mikeash.com/getting_answers.html \n\n Your observance of these techniques helps all of us to better assist you.",
+            }
+        });
+    }
+
+
 
     // Set up the DynamoDB client
     const docClient = new AWS.DynamoDB.DocumentClient();
