@@ -21,7 +21,27 @@ aws lambda update-function-code --function-name nyartccDiscordBot --zip-file fil
 With the bot uploaded to lambda, you need to register the command with Discord, this is done from your local machine.
 
 Note, you will need a .env file with the BOT_TOKEN and APP_ID from Discord Developer then the ID of the Discord Guild (Aka. Discord Server)
-Update `register_commands/register_command.js` to match the new command, then run it:
+Update `register_commands/register_command.js` to match the new command:
+
+```javascript
+let command_data = {
+    "name": "<your command name here>",
+    "description": "<The decription that will be shown in Discord when users start typing the command name>"
+    
+    // Optional - This is used to add a subcommand to the command if you need it. Example: /metar <ICAO>
+    // Remove this (or comment it out) if you don't need it.
+    "options": [
+        {
+            "name": "foo",
+            "description": "The foo to echo back",
+            "type": 3,
+            "required": true
+        }
+    ]
+}
+```
+
+then run it:
 
 ```bash
 cd register_command

@@ -1,0 +1,11 @@
+{
+  "name": "Geneate DynamoDB Table",
+    "description": "Generate a DynamoDB table",
+    "main": "generate.js",
+    "version": "1.0.0",
+    "author": "Karl Mathias Moberg",
+    "license": "MIT",
+    "dependencies": {
+      "aws-sdk": "^2.1286.0"
+    }
+}

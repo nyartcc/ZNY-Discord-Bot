@@ -1,0 +1,38 @@
+{
+  version: '2.0',
+  routeKey: 'ANY /nyartccDiscordBot',
+  rawPath: '/default/nyartccDiscordBot',
+  rawQueryString: '',
+  headers: {
+    'content-length': '1199',
+    'content-type': 'application/json',
+    host: 'grhpv9fpv2.execute-api.us-east-1.amazonaws.com',
+    'user-agent': 'Discord-Interactions/1.0 (+https://discord.com)',
+    'x-amzn-trace-id': 'Root=1-63b4239b-150e92e03def87f25cb7a7b7',
+    'x-forwarded-for': '35.237.4.214',
+    'x-forwarded-port': '443',
+    'x-forwarded-proto': 'https',
+    'x-signature-ed25519': '01e79cf1870071b544ccc7c91797d7d342285a5690c4f91562fa4a3421b104fb3c389c9b1ea0ace156525a739666b76a1f145a4bb78d408fe5fe5dffc0745d04',
+    'x-signature-timestamp': '1672749979'
+  },
+  requestContext: {
+    accountId: '342648211424',
+    apiId: 'grhpv9fpv2',
+    domainName: 'grhpv9fpv2.execute-api.us-east-1.amazonaws.com',
+    domainPrefix: 'grhpv9fpv2',
+    http: {
+      method: 'POST',
+      path: '/default/nyartccDiscordBot',
+      protocol: 'HTTP/1.1',
+      sourceIp: '35.237.4.214',
+      userAgent: 'Discord-Interactions/1.0 (+https://discord.com)'
+    },
+    requestId: 'eKqARjwXIAMEcVg=',
+    routeKey: 'ANY /nyartccDiscordBot',
+    stage: 'default',
+    time: '03/Jan/2023:12:46:19 +0000',
+    timeEpoch: 1672749979158
+  },
+  body: '{"app_permissions":"4398046511103","application_id":"619092564502511617","channel_id":"633371827720421377","data":{"guild_id":"283029191115407361","id":"976530485528387634","name":"karlisgreat","type":1},"entitlement_sku_ids":[],"guild_id":"283029191115407361","guild_locale":"en-US","id":"1059814968582733874","locale":"en-US","member":{"avatar":null,"communication_disabled_until":null,"deaf":false,"flags":0,"is_pending":false,"joined_at":"2017-08-20T17:51:24.348000+00:00","mute":false,"nick":"(ATM) Karl Moberg - KM","pending":false,"permissions":"4398046511103","premium_since":"2021-08-11T22:34:25.233000+00:00","roles":["348594122682269696","348906149774622723","673147428605788170","763556809289891850","283030218946510868","765813407391285270"],"user":{"avatar":"4116ade1d0a1543557890c2754e31715","avatar_decoration":"a7fc401c7b8e182aa4ec2a8e677d3642","discriminator":"9999","id":"204162992701571072","public_flags":128,"username":"KMoberg"}},"token":"aW50ZXJhY3Rpb246MTA1OTgxNDk2ODU4MjczMzg3NDpyYXJnc015RkROSTJQUTVMSGlpeDFBUjdhN3NQbnptb2syclNjU0o2M09Rd1JDbkNWMG5ueGtvMEF0NVFDaTJCRExDelp2TkN3N0l5WXdnVmtsdElXTHRzUlM3MDl6amhpRWxPZW9MbkdtVjYwWHBZa21JNE5CYjZDTmNNdDBZYw","type":2,"version":1}',
+  isBase64Encoded: false
+}

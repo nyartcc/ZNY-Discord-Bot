@@ -1,0 +1,13 @@
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 300
+      MemorySize: 128
+      Handler: app.handler
+      CodeUri: s3://zny-lambda-artifacts/0ec2cae4ab918f4db723d981662eb917
+      Runtime: nodejs16.x
+      Architectures:
+      - x86_64
+    Metadata:
+      SamResourceId: Function

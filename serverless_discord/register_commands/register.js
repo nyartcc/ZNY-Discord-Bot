@@ -10,20 +10,12 @@ const headers = {
 }
 console.log(headers)
 
-// Run this to register commands from ../lambda_bot/index.js
-// Change the name for the command to match the name in the index.js file
+// Run this to register commands from ../lambda_bot/app.old.js
+// Change the name for the command to match the name in the app.old.js file
 // Then change the description to something helpful.
 let command_data = {
-    "name": "metar",
-    "description": "Get the METAR for an airport",
-    "options": [
-        {
-            "name": "airport",
-            "description": "The airport to get the METAR for",
-            "type": 3,
-            "required": true
-        }
-    ]
+    "name": "n90wx",
+    "description": "Get the weather for the N90 major airports."
 }
 
 axios.post(url, JSON.stringify(command_data), {
