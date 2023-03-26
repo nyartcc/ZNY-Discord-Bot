@@ -1,22 +1,24 @@
-const nacl = require('tweetnacl');
-const _ = require('underscore');
-const AWS = require('aws-sdk');
-const fetch = require("isomorphic-fetch");
+// noinspection SpellCheckingInspection
+
+const nacl  = require('tweetnacl');         // TODO - Unused Import?
+const _     = require('underscore');
+const AWS   = require('aws-sdk');
+const fetch = require("isomorphic-fetch");  // TODO - Unused Import? - Remove Layer?
 
 const commandHandlers = {
-  getroles: handleGetRoles,
-  linkaccount: handleLinkAccount,
-  znyhelp: handleHelp,
-  commands: handleCommands,
-  staff: handleStaff,
-  cinnamon: handleCinnamon,
-  karlisgreat: handleKarlisGreat,
-  gizep: handleGizep,
-  gabe: handleGabe,
-  metar: handleMetar,
-  jfkpilots: handleJfkPilots,
-  faq: handleFaq,
-  n90weather: handleN90Weather,
+    getroles    : handleGetRoles,
+    linkaccount : handleLinkAccount,
+    znyhelp     : handleHelp,
+    commands    : handleCommands,
+    staff       : handleStaff,
+    cinnamon    : handleCinnamon,
+    karlisgreat : handleKarlisGreat,
+    gizep       : handleGizep,
+    gabe        : handleGabe,
+    metar       : handleMetar,
+    jfkpilots   : handleJfkPilots,
+    faq         : handleFaq,
+    n90wx       : handleN90Weather,
 };
 
 exports.handler = async (event) => {
