@@ -8,5 +8,9 @@
     "node-fetch": "^3.3.0",
     "tweetnacl": "^1.0.3",
     "underscore": "^1.13.3"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1343.0",
+    "isomorphic-fetch": "^3.0.0"
   }
 }
