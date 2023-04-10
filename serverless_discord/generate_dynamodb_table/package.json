@@ -6,6 +6,6 @@
     "author": "Karl Mathias Moberg",
     "license": "MIT",
     "dependencies": {
-      "aws-sdk": "^2.1286.0"
+      "aws-sdk": "^2.1354.0"
     }
 }
