@@ -10,7 +10,7 @@
     "underscore": "^1.13.3"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1343.0",
+    "aws-sdk": "^2.1354.0",
     "isomorphic-fetch": "^3.0.0"
   }
 }
